@@ -13,6 +13,8 @@ for (let i = 0; i < NUM_SAMPLES; i++) {
   });
 }
 
+app.use(express.json());
+
 app.get("/", (req, res) => {
   res.send("QuickNote API!");
 });
@@ -27,6 +29,16 @@ app.get("/api/notes/:id", async (req, res) => {
   const { id } = req.params;
   const data = await notes.read(id);
   res.json({ data: data ? data : [] });
+});
+
+app.post("/api/notes", async (req, res) => {
+  try {
+    const { title, text } = req.body;
+    const data = await notes.create({ title, text });
+    res.status(201).json({ data });
+  } catch (err) {
+    res.status(err.status).json({ message: err.message });
+  }
 });
 
 app.listen(port, () => {
