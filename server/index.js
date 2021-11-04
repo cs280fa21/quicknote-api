@@ -51,6 +51,17 @@ app.delete("/api/notes/:id", async (req, res) => {
   }
 });
 
+app.put("/api/notes/:id", async (req, res) => {
+  try {
+    const { id } = req.params;
+    const { title, text } = req.body;
+    const data = await notes.update(id, { title, text });
+    res.json({ data });
+  } catch (err) {
+    res.status(err.status).json({ message: err.message });
+  }
+});
+
 app.listen(port, () => {
   console.log(`Express app listening at port: http://localhost:${port}/`);
 });
