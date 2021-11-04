@@ -1,20 +1,31 @@
 const Note = require("../model/Note");
+const ApiError = require("../model/ApiError");
 
 class NoteDao {
   constructor() {
     this.notes = [];
   }
 
-  // Pre: title and text are not undefined, and title is not empty
   async create({ title, text }) {
+    if (title === undefined || title === "") {
+      throw new ApiError(400, "Every note must have a none-empty title!");
+    }
+
+    if (text === undefined) {
+      throw new ApiError(400, "Every note must have a text attribute!");
+    }
+
     const note = new Note(title, text);
     this.notes.push(note);
     return note;
   }
 
-  // Pre: id is a valid note ID
   async update(id, { title, text }) {
     const index = this.notes.findIndex((note) => note._id === id);
+
+    if (index === -1) {
+      throw new ApiError(404, "There is no note with the given ID!");
+    }
 
     if (title !== undefined) {
       this.notes[index].title = title;
@@ -27,19 +38,25 @@ class NoteDao {
     return this.notes[index];
   }
 
-  // Pre: id is a valid note ID
   async delete(id) {
     const index = this.notes.findIndex((note) => note._id === id);
+
+    if (index === -1) {
+      throw new ApiError(404, "There is no note with the given ID!");
+    }
+
     const note = this.notes[index];
     this.notes.splice(index, 1);
     return note;
   }
 
-  // Pre: id is a valid note ID
+  // returns an empty array if there is no note with the given ID
   async read(id) {
     return this.notes.find((note) => note._id === id);
   }
 
+  // returns an empty array if there is no note in the database
+  //  or no note matches the search query
   async readAll(query = "") {
     if (query !== "") {
       return this.notes.filter(
