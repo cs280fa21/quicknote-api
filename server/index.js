@@ -20,7 +20,13 @@ app.get("/", (req, res) => {
 app.get("/api/notes", async (req, res) => {
   const { query } = req.query;
   const data = await notes.readAll(query);
-  res.json({ data });
+  res.json({ data: data ? data : [] });
+});
+
+app.get("/api/notes/:id", async (req, res) => {
+  const { id } = req.params;
+  const data = await notes.read(id);
+  res.json({ data: data ? data : [] });
 });
 
 app.listen(port, () => {
