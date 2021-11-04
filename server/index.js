@@ -18,7 +18,8 @@ app.get("/", (req, res) => {
 });
 
 app.get("/api/notes", async (req, res) => {
-  const data = await notes.readAll();
+  const { query } = req.query;
+  const data = await notes.readAll(query);
   res.json({ data });
 });
 

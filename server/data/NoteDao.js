@@ -60,7 +60,7 @@ class NoteDao {
   async readAll(query = "") {
     if (query !== "") {
       return this.notes.filter(
-        (note) => note.title === query || note.text === query
+        (note) => note.title.includes(query) || note.text.includes(query)
       );
     }
     return this.notes;
