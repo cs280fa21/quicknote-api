@@ -11,3 +11,9 @@ mongoose
   .catch((err) => {
     console.log(err);
   });
+
+const NoteSchema = new mongoose.Schema({
+  title: { type: String },
+  text: { type: String },
+});
+  
