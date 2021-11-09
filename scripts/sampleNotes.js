@@ -17,3 +17,14 @@ const NoteSchema = new mongoose.Schema({
   text: { type: String },
 });
   
+const Note = mongoose.model("Note", NoteSchema);
+
+Note.create(
+  {
+    title: faker.lorem.sentence(),
+    text: faker.lorem.paragraph(),
+  },
+  (err, note) => {
+    console.log(err ? err : note);
+  }
+);
