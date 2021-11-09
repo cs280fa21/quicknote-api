@@ -1,17 +1,12 @@
-const faker = require("faker");
+const db = require("./data/db");
 const NoteDao = require("./data/NoteDao");
 const express = require("express");
 const app = express();
 const port = process.env.PORT || 5000;
 
-const NUM_SAMPLES = 3;
 const notes = new NoteDao();
-for (let i = 0; i < NUM_SAMPLES; i++) {
-  notes.create({
-    title: faker.lorem.sentence(),
-    text: faker.lorem.paragraph(),
-  });
-}
+
+db.connect(); // no need to await for it due to Mongoose buffering!
 
 app.use(express.json());
 

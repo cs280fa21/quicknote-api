@@ -15,55 +15,49 @@ class NoteDao {
       throw new ApiError(400, "Every note must have a text attribute!");
     }
 
-    const note = new Note(title, text);
-    this.notes.push(note);
+    const note = await Note.create({ title, text });
     return note;
   }
 
   async update(id, { title, text }) {
-    const index = this.notes.findIndex((note) => note._id === id);
+    const note = await Note.findByIdAndUpdate(
+      id,
+      { title, text },
+      { new: true, runValidators: true }
+    );
 
-    if (index === -1) {
+    if (note === null) {
       throw new ApiError(404, "There is no note with the given ID!");
     }
 
-    if (title !== undefined) {
-      this.notes[index].title = title;
-    }
-
-    if (text !== undefined) {
-      this.notes[index].text = text;
-    }
-
-    return this.notes[index];
+    return note;
   }
 
   async delete(id) {
-    const index = this.notes.findIndex((note) => note._id === id);
+    const note = await Note.findByIdAndDelete(id);
 
-    if (index === -1) {
+    if (note === null) {
       throw new ApiError(404, "There is no note with the given ID!");
     }
 
-    const note = this.notes[index];
-    this.notes.splice(index, 1);
     return note;
   }
 
   // returns an empty array if there is no note with the given ID
   async read(id) {
-    return this.notes.find((note) => note._id === id);
+    const note = await Note.findById(id);
+    return note ? note : [];
   }
 
   // returns an empty array if there is no note in the database
   //  or no note matches the search query
   async readAll(query = "") {
     if (query !== "") {
-      return this.notes.filter(
-        (note) => note.title.includes(query) || note.text.includes(query)
-      );
+      const notes = await Note.find().or([{ title: query }, { text: query }]);
+      return notes;
     }
-    return this.notes;
+    const notes = await Note.find({});
+    return notes;
   }
 }
 
