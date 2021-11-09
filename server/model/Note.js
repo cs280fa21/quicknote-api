@@ -1,11 +1,10 @@
-const { v4: uuidv4 } = require("uuid");
+const mongoose = require("mongoose");
 
-class Note {
-  constructor(title, text) {
-    this._id = uuidv4();
-    this.title = title;
-    this.text = text;
-  }
-}
+const NoteSchema = new mongoose.Schema({
+  title: { type: String, required: true },
+  text: { type: String, required: true },
+});
+
+const Note = mongoose.model("Note", NoteSchema);
 
 module.exports = Note;
