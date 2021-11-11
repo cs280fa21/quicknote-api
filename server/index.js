@@ -1,6 +1,7 @@
 const db = require("./data/db");
 const notes = require("./routes/notes.js");
 const users = require("./routes/users.js");
+const auth = require("./routes/auth.js");
 
 const express = require("express");
 const app = express();
@@ -17,6 +18,7 @@ app.get("/", (req, res) => {
 // routing
 app.use(notes);
 app.use(users);
+app.use(auth);
 
 app.listen(port, () => {
   console.log(`Express app listening at port: http://localhost:${port}/`);
