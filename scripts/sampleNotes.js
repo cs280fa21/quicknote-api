@@ -2,7 +2,7 @@ const faker = require("faker");
 const db = require("../server/data/db");
 const NoteDao = require("../server/data/NoteDao");
 
-async function createSameplNotes() {
+async function createSampleNotes() {
   try {
     await db.connect();
 
@@ -17,4 +17,4 @@ async function createSameplNotes() {
   }
 }
 
-createSameplNotes();
+createSampleNotes();
