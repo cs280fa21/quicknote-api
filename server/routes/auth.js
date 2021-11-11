@@ -1,5 +1,6 @@
 const express = require("express");
 const UserDao = require("../data/UserDao");
+const { verifyPassword } = require("../util/hashing");
 
 const router = express.Router();
 const users = new UserDao();
@@ -27,7 +28,11 @@ router.post("/authenticate", async (req, res) => {
     const user = await users.readOne(username);
 
     // Authentication!
-    if (!user || user.password !== password) {
+    const isAuthenticated = await verifyPassword(
+      password,
+      user ? user.password : ""
+    );
+    if (!isAuthenticated) {
       return res.status(403).json({
         message: "Wrong username or password!",
       });
