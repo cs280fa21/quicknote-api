@@ -4,7 +4,21 @@ const NoteDao = require("../data/NoteDao");
 const router = express.Router();
 const notes = new NoteDao();
 
-router.get("/api/notes", async (req, res) => {
+const checkToken = async (req, res, next) => {
+  const { authorization } = req.headers;
+  const [_, token] = authorization.trim().split(" ");
+  const valid = await verifyToken(token);
+  if (!valid) {
+    return res.status(403).json({
+      message:
+        "You are not authorized to access this resource.",
+    });
+  }
+  req.user = decodeToken(token);
+  next();
+};
+
+router.get("/api/notes", checkToken, async (req, res) => {
   const { query } = req.query;
   const data = await notes.readAll(query);
   res.json({ data: data ? data : [] });
@@ -16,7 +30,7 @@ router.get("/api/notes/:id", async (req, res) => {
   res.json({ data: data ? data : [] });
 });
 
-router.post("/api/notes", async (req, res) => {
+router.post("/api/notes", checkToken, async (req, res) => {
   try {
     const { title, text } = req.body;
     const data = await notes.create({ title, text });
@@ -26,7 +40,7 @@ router.post("/api/notes", async (req, res) => {
   }
 });
 
-router.delete("/api/notes/:id", async (req, res) => {
+router.delete("/api/notes/:id", checkToken, async (req, res) => {
   try {
     const { id } = req.params;
     const data = await notes.delete(id);
@@ -36,7 +50,7 @@ router.delete("/api/notes/:id", async (req, res) => {
   }
 });
 
-router.put("/api/notes/:id", async (req, res) => {
+router.put("/api/notes/:id", checkToken, async (req, res) => {
   try {
     const { id } = req.params;
     const { title, text } = req.body;
