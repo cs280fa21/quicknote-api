@@ -1,10 +1,22 @@
 const express = require("express");
 const UserDao = require("../data/UserDao");
+const { verifyToken, decodeToken } = require("../util/token");
 
 const router = express.Router();
 const users = new UserDao();
 
 router.get("/api/users", async (req, res) => {
+  const { authorization } = req.headers;
+  const [_, token] = authorization.trim().split(" ");
+  const valid = await verifyToken(token);
+  const user = decodeToken(token);
+  if (!valid || user.role !== "ADMIN") {
+    return res.status(403).json({
+      message:
+        "You are not authorized to access this resource.",
+    });
+  }
+  
   const { username, role } = req.query;
   if (username && role) {
     res.status(400).json({

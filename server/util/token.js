@@ -32,7 +32,13 @@ const verifyToken = (token) => {
   });
 };
 
+const decodeToken = (token) => {
+  const decoded = jwt.decode(token);
+  return decoded;
+}
+
 module.exports = {
   createToken,
   verifyToken,
+  decodeToken
 };
