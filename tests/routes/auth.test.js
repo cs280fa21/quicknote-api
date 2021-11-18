@@ -1,7 +1,9 @@
 const mongoose = require("mongoose");
 const supertest = require("supertest");
 const app = require("../../server");
+const UserDao = require("../server/data/UserDao");
 
+const users = new UserDao();
 const request = supertest(app);
 
 describe("Test authentication endpoints", () => {
@@ -9,6 +11,11 @@ describe("Test authentication endpoints", () => {
   describe("Test /authenticate", () => {
     beforeAll(async () => {
       await mongoose.connect(global.__MONGO_URI__);
+      await users.create({
+        username: "testclient",
+        password: "testclient",
+        role: "CLIENT",
+      });
     });
 
     test("Return 400 when username is missing", async () => {
