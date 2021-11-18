@@ -34,7 +34,7 @@ describe("Test authentication endpoints", () => {
       
     });
 
-    test("Return 200 when authentication is sucessfull", async () => {
+    test.only("Return 200 when authentication is sucessfull", async () => {
       const response = await request.post("/authenticate").send({
         username: "testclient",
         password: "testclient",
