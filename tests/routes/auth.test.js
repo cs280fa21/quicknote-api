@@ -1,7 +1,7 @@
 const mongoose = require("mongoose");
 const supertest = require("supertest");
 const app = require("../../server");
-const UserDao = require("../server/data/UserDao");
+const UserDao = require("../../server/data/UserDao");
 
 const users = new UserDao();
 const request = supertest(app);
@@ -35,7 +35,11 @@ describe("Test authentication endpoints", () => {
     });
 
     test("Return 200 when authentication is sucessfull", async () => {
-
+      const response = await request.post("/authenticate").send({
+        username: "testclient",
+        password: "testclient",
+      });
+      expect(response.status).toBe(200);
     });
 
     test("Return a JWT when authentication is sucessfull", async () => {
