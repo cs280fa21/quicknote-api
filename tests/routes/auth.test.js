@@ -1,3 +1,4 @@
+const mongoose = require("mongoose");
 const supertest = require("supertest");
 const app = require("../../server");
 
@@ -6,6 +7,10 @@ const request = supertest(app);
 describe("Test authentication endpoints", () => {
 
   describe("Test /authenticate", () => {
+    beforeAll(async () => {
+      await mongoose.connect(global.__MONGO_URI__);
+    });
+
     test("Return 400 when username is missing", async () => {
       
     });
@@ -28,6 +33,10 @@ describe("Test authentication endpoints", () => {
 
     test("Return a JWT when authentication is sucessfull", async () => {
 
+    });
+
+    afterAll(async () => {
+      await mongoose.connection.close();
     });
   });
 });
