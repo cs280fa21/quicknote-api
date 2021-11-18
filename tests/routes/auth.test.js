@@ -7,16 +7,16 @@ const users = new UserDao();
 const request = supertest(app);
 
 describe("Test authentication endpoints", () => {
-  describe("Test /authenticate", () => {
-    beforeAll(async () => {
-      await mongoose.connect(global.__MONGO_URI__);
-      await users.create({
-        username: "testclient",
-        password: "testclient",
-        role: "CLIENT",
-      });
+  beforeAll(async () => {
+    await mongoose.connect(global.__MONGO_URI__);
+    await users.create({
+      username: "testclient",
+      password: "testclient",
+      role: "CLIENT",
     });
+  });
 
+  describe("Test /authenticate", () => {
     test("Return 400 when username is missing", async () => {
       const response = await request.post("/authenticate").send({
         password: "testclient",
@@ -62,9 +62,49 @@ describe("Test authentication endpoints", () => {
       });
       expect(response.body.token).toBeTruthy(); // exists and non empty!
     });
+  });
 
-    afterAll(async () => {
-      await mongoose.connection.close();
+  describe("Test /register", () => {
+    test("Return 400 when username is missing", async () => {
+      const response = await request.post("/register").send({
+        password: "newtestclient",
+      });
+      expect(response.status).toBe(400);
     });
+
+    test("Return 400 when password is missing", async () => {
+      const response = await request.post("/register").send({
+        username: "newtestclient",
+      });
+      expect(response.status).toBe(400);
+    });
+
+    test("Return 500 when username already exist", async () => {
+      const response = await request.post("/register").send({
+        username: "testclient",
+        password: "testclient",
+      });
+      expect(response.status).toBe(500);
+    });
+
+    test("Return 201 when registeration is sucessfull", async () => {
+      const response = await request.post("/register").send({
+        username: "newtestclient",
+        password: "newtestclient",
+      });
+      expect(response.status).toBe(201);
+    });
+
+    test("Return a JWT when registeration is sucessfull", async () => {
+      const response = await request.post("/register").send({
+        username: "anothernewtestclient",
+        password: "anothernewtestclient",
+      });
+      expect(response.body.token).toBeTruthy(); // exists and non empty!
+    });
+  });
+
+  afterAll(async () => {
+    await mongoose.connection.close();
   });
 });
