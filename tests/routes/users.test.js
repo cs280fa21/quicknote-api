@@ -226,7 +226,7 @@ describe(`Test ${endpoint} endpoints`, () => {
       };
     });
 
-    test("Return 500 for duplicate token", async () => {
+    test("Return 500 when username is already in-use", async () => {
       const response = await request
         .post(endpoint)
         .send({
