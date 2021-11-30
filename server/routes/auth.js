@@ -36,7 +36,7 @@ router.post("/authenticate", async (req, res, next) => {
     if (!isAuthenticated) {
       throw new ApiError(403, "Wrong username or password!");
     } else {
-      const token = createToken(user);
+      const token = createToken(user[0]);
       return res.json({
         message: "Authentication successful!",
         token: token,
