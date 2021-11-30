@@ -1,13 +1,14 @@
 const express = require("express");
 const UserDao = require("../data/UserDao");
-const { verifyToken, decodeToken } = require("../util/token");
+const ApiError = require("../model/ApiError");
+const { verifyToken, decodeToken, parseBearer } = require("../util/token");
 
 const router = express.Router();
 const users = new UserDao();
 
 const checkAdmin = async (req, res, next) => {
   const { authorization } = req.headers;
-  const [_, token] = authorization.trim().split(" ");
+  const token = authorization ? parseBearer(authorization) : "";
   const valid = await verifyToken(token);
   const user = decodeToken(token);
   if (!valid || user.role !== "ADMIN") {
@@ -36,9 +37,13 @@ router.get("/api/users", checkAdmin, async (req, res) => {
 });
 
 router.get("/api/users/:id", checkAdmin, async (req, res) => {
-  const { id } = req.params;
-  const data = await users.read(id);
-  res.json({ data: data ? data : [] });
+  try {
+    const { id } = req.params;
+    const data = await users.read(id);
+    res.json({ data: data ? data : [] });
+  } catch (err) {
+    res.status(err.status).json({ message: err.message });
+  }
 });
 
 router.post("/api/users", checkAdmin, async (req, res) => {
@@ -65,6 +70,9 @@ router.put("/api/users/:id", checkAdmin, async (req, res) => {
   try {
     const { id } = req.params;
     const { password, role } = req.body;
+    if (!password && !role) {
+      return res.status(400).json({ message: "You must provide at least one user attribute!" });
+    }
     const data = await users.update(id, { password, role });
     res.json({ data });
   } catch (err) {

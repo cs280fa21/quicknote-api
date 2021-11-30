@@ -37,8 +37,14 @@ const decodeToken = (token) => {
   return decoded;
 }
 
+const parseBearer = (bearer) => {
+  const [_, token] = bearer.trim().split(" ");
+  return token;
+};
+
 module.exports = {
   createToken,
   verifyToken,
-  decodeToken
+  decodeToken,
+  parseBearer
 };

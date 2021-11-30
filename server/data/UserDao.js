@@ -49,12 +49,18 @@ class UserDao {
   // returns an empty array if there is no user with the given ID
   async read(id) {
     const user = await User.findById(id);
-    return user ? user : [];
+
+    if (user === null) {
+      throw new ApiError(404, "There is no user with the given ID!");
+    }
+
+    return user
   }
 
-  // returns null if no user matches the search query
+
+  // returns empty array if no user matches the username
   async readOne(username) {
-    const user = await User.findOne({ username });
+    const user = await User.find({ username });
     return user;
   }
 
