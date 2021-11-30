@@ -4,12 +4,14 @@ const users = require("./routes/users.js");
 const auth = require("./routes/auth.js");
 const { globalErrorHandler } = require("./util/middleware");
 const cors = require("cors");
+const helmet = require("helmet");
 
 const express = require("express");
 const app = express();
 
 app.use(express.json());
 app.use(cors());
+app.use(helmet());
 
 app.get("/", (req, res) => {
   res.send("QuickNote API!");
