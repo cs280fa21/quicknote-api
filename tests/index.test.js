@@ -3,7 +3,7 @@ const app = require("../server");
 
 const request = supertest(app);
 
-test.skip("Get 200 for API homepage", async () => {
+test("Get 200 for API homepage", async () => {
   const response = await request.get("/");
   expect(response.status).toBe(200);
 });

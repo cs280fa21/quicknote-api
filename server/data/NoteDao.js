@@ -17,7 +17,12 @@ class NoteDao {
     }
 
     const note = await Note.create({ title, text, author });
-    return note;
+    return {
+      _id: note._id.toString(),
+      title: note.title,
+      text: note.text,
+      author: note.author.toString(),
+    };
   }
 
   async update(author, id, { title, text }) {
@@ -26,19 +31,21 @@ class NoteDao {
       id,
       { title, text },
       { new: true, runValidators: true }
-    );
+    )
+      .lean()
+      .select("-__v");
   }
 
   async delete(author, id) {
     await this.read(author, id);
-    return Note.findByIdAndDelete(id);
+    return Note.findByIdAndDelete(id).lean().select("-__v");
   }
 
   async read(author, id) {
-    const note = await Note.findById(id);
+    const note = await Note.findById(id).lean().select("-__v");
 
     if (!author || !mongoose.isValidObjectId(author)) {
-      throw new ApiError(500, "Author attribute was is invalid or missing!");
+      throw new ApiError(500, "Author attribute is invalid or missing!");
     }
 
     if (note === null) {
@@ -62,7 +69,7 @@ class NoteDao {
       throw new ApiError(500, "Author attribute was is invalid or missing!");
     }
 
-    const notes = await Note.find({ author });
+    const notes = await Note.find({ author }).lean().select("-__v");
 
     if (query !== "") {
       return notes.filter(

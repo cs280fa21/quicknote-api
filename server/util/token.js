@@ -1,6 +1,6 @@
 const jwt = require("jsonwebtoken");
 
-const createToken = (user) => {
+const createToken = (user, expiration) => {
   return jwt.sign(
     {
       sub: user._id,
@@ -10,7 +10,7 @@ const createToken = (user) => {
     process.env.JWT_SECRET,
     {
       algorithm: "HS256",
-      expiresIn: "2d",
+      expiresIn: expiration ? expiration : "2d",
     }
   );
 };
@@ -37,8 +37,14 @@ const decodeToken = (token) => {
   return decoded;
 }
 
+const parseBearer = (bearer) => {
+  const [_, token] = bearer.trim().split(" ");
+  return token;
+};
+
 module.exports = {
   createToken,
   verifyToken,
-  decodeToken
+  decodeToken,
+  parseBearer
 };
