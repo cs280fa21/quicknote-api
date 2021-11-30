@@ -12,7 +12,7 @@ router.post("/register", async (req, res) => {
     const user = await users.create({ username, password, role: "CLIENT" });
     const token = createToken(user);
     return res.status(201).json({
-      message: "Registeration successful!",
+      message: "Registration successful!",
       token: token,
     });
   } catch (err) {
@@ -54,6 +54,12 @@ router.post("/authenticate", async (req, res) => {
 });
 
 router.post("/verify", async (req, res) => {
+  if (!req.body || !req.body.token) {
+    return res.status(400).json({
+      message: "You must provide a token in request's payload!",
+    });
+  }
+
   const { token } = req.body;
   const isValid = await verifyToken(token);
 

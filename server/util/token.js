@@ -1,6 +1,6 @@
 const jwt = require("jsonwebtoken");
 
-const createToken = (user) => {
+const createToken = (user, expiration) => {
   return jwt.sign(
     {
       sub: user._id,
@@ -10,7 +10,7 @@ const createToken = (user) => {
     process.env.JWT_SECRET,
     {
       algorithm: "HS256",
-      expiresIn: "2d",
+      expiresIn: expiration ? expiration : "2d",
     }
   );
 };
