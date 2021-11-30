@@ -351,8 +351,9 @@ describe(`Test ${endpoint} endpoints`, () => {
     });
 
     test("Return 404 for invalid ID", async () => {
+      const id = mongoose.Types.ObjectId().toString();
       const response = await request
-        .put(`${endpoint}/${mongoose.Types.ObjectId().toString()}`)
+        .put(`${endpoint}/${id}`)
         .send({
           role: "ADMIN",
         })
@@ -361,17 +362,15 @@ describe(`Test ${endpoint} endpoints`, () => {
     });
 
     test("Return 403 for missing token", async () => {
-      const response = await request
-        .put(`${endpoint}/${user._id.toString()}`)
-        .send({
-          role: "ADMIN",
-        });
+      const response = await request.put(`${endpoint}/${user._id}`).send({
+        role: "ADMIN",
+      });
       expect(response.status).toBe(403);
     });
 
     test("Return 403 for invalid token", async () => {
       const response = await request
-        .put(`${endpoint}/${user._id.toString()}`)
+        .put(`${endpoint}/${user._id}`)
         .send({
           role: "ADMIN",
         })
@@ -381,7 +380,7 @@ describe(`Test ${endpoint} endpoints`, () => {
 
     test("Return 403 for unauthorized token", async () => {
       const response = await request
-        .put(`${endpoint}/${user._id.toString()}`)
+        .put(`${endpoint}/${user._id}`)
         .send({
           role: "ADMIN",
         })
@@ -389,19 +388,9 @@ describe(`Test ${endpoint} endpoints`, () => {
       expect(response.status).toBe(403);
     });
 
-    test("Return 403 for customer updating their role", async () => {
-      const response = await request
-        .put(`${endpoint}/${user._id.toString()}`)
-        .send({
-          role: "ADMIN",
-        })
-        .set("Authorization", `Bearer ${userToken}`);
-      expect(response.status).toBe(403);
-    });
-
     test("Return 403 for expired token", async () => {
       const response = await request
-        .put(`${endpoint}/${user._id.toString()}`)
+        .put(`${endpoint}/${user._id}`)
         .send({
           role: "ADMIN",
         })
@@ -411,14 +400,14 @@ describe(`Test ${endpoint} endpoints`, () => {
 
     test("Return 400 for missing payload", async () => {
       const response = await request
-        .put(`${endpoint}/${user._id.toString()}`)
+        .put(`${endpoint}/${user._id}`)
         .set("Authorization", `Bearer ${tokens.admin}`);
       expect(response.status).toBe(400);
     });
 
     test("Return 200 and updated user for successful request", async () => {
       const response = await request
-        .put(`${endpoint}/${user._id.toString()}`)
+        .put(`${endpoint}/${user._id}`)
         .send({
           role: "ADMIN",
         })
@@ -450,43 +439,42 @@ describe(`Test ${endpoint} endpoints`, () => {
     });
 
     test("Return 404 for invalid ID", async () => {
+      const id = mongoose.Types.ObjectId().toString();
       const response = await request
-        .delete(`${endpoint}/${mongoose.Types.ObjectId().toString()}`)
+        .delete(`${endpoint}/${id}`)
         .set("Authorization", `Bearer ${tokens.admin}`);
       expect(response.status).toBe(404);
     });
 
     test("Return 403 for missing token", async () => {
-      const response = await request.delete(
-        `${endpoint}/${samples[0]._id.toString()}`
-      );
+      const response = await request.delete(`${endpoint}/${samples[0]._id}`);
       expect(response.status).toBe(403);
     });
 
     test("Return 403 for invalid token", async () => {
       const response = await request
-        .delete(`${endpoint}/${samples[0]._id.toString()}`)
+        .delete(`${endpoint}/${samples[0]._id}`)
         .set("Authorization", `Bearer ${tokens.invalid}`);
       expect(response.status).toBe(403);
     });
 
     test("Return 403 for unauthorized token", async () => {
       const response = await request
-        .delete(`${endpoint}/${samples[0]._id.toString()}`)
+        .delete(`${endpoint}/${samples[0]._id}`)
         .set("Authorization", `Bearer ${tokens.client}`);
       expect(response.status).toBe(403);
     });
 
     test("Return 403 for expired token", async () => {
       const response = await request
-        .delete(`${endpoint}/${samples[0]._id.toString()}`)
+        .delete(`${endpoint}/${samples[0]._id}`)
         .set("Authorization", `Bearer ${tokens.expiredAdmin}`);
       expect(response.status).toBe(403);
     });
 
     test("Return 200 and deleted user for successful request", async () => {
       const response = await request
-        .delete(`${endpoint}/${samples[1]._id.toString()}`)
+        .delete(`${endpoint}/${samples[1]._id}`)
         .set("Authorization", `Bearer ${tokens.admin}`);
       expect(response.status).toBe(200);
       expect(response.body.data).toStrictEqual(samples[1]);

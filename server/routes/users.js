@@ -19,7 +19,7 @@ const checkAdmin = async (req, res, next) => {
 
 router.get("/api/users", checkAdmin, async (req, res, next) => {
   try {
-    const {username, role} = req.query;
+    const { username, role } = req.query;
     if (username && role) {
       throw new ApiError(
         400,
@@ -29,7 +29,7 @@ router.get("/api/users", checkAdmin, async (req, res, next) => {
       const data = username
         ? await users.readOne(username)
         : await users.readAll(role);
-      res.json({data: data ? data : []});
+      res.json({ data: data ? data : [] });
     }
   } catch (err) {
     next(err);
