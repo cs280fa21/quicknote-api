@@ -1,21 +1,10 @@
 const express = require("express");
 const NoteDao = require("../data/NoteDao");
 const ApiError = require("../model/ApiError");
-const { verifyToken, parseBearer, decodeToken } = require("../util/token");
+const { checkToken } = require("../util/middleware");
 
 const router = express.Router();
 const notes = new NoteDao();
-
-const checkToken = async (req, res, next) => {
-  const { authorization } = req.headers;
-  const token = authorization ? parseBearer(authorization) : "";
-  const valid = await verifyToken(token);
-  if (!valid) {
-    next(new ApiError(403, "You are not authorized to perform this action."));
-  }
-  req.user = decodeToken(token);
-  next();
-};
 
 router.get("/api/notes", checkToken, async (req, res, next) => {
   try {

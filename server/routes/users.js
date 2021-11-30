@@ -1,21 +1,10 @@
 const express = require("express");
 const UserDao = require("../data/UserDao");
 const ApiError = require("../model/ApiError");
-const { verifyToken, decodeToken, parseBearer } = require("../util/token");
+const { checkAdmin } = require("../util/middleware");
 
 const router = express.Router();
 const users = new UserDao();
-
-const checkAdmin = async (req, res, next) => {
-  const { authorization } = req.headers;
-  const token = authorization ? parseBearer(authorization) : "";
-  const valid = await verifyToken(token);
-  const user = decodeToken(token);
-  if (!valid || user.role !== "ADMIN") {
-    next(new ApiError(403, "You are not authorized to perform this action."));
-  }
-  next();
-};
 
 router.get("/api/users", checkAdmin, async (req, res, next) => {
   try {

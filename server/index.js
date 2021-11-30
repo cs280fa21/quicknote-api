@@ -2,6 +2,7 @@ require("dotenv").config();
 const notes = require("./routes/notes.js");
 const users = require("./routes/users.js");
 const auth = require("./routes/auth.js");
+const { globalErrorHandler } = require("./util/middleware");
 
 const express = require("express");
 const app = express();
@@ -17,15 +18,6 @@ app.use(notes);
 app.use(users);
 app.use(auth);
 
-// Global error handler!
-app.use((err, req, res, next) => {
-  if (err) {
-    // debug(err);
-    return res
-      .status(err.status || 500)
-      .json({message: err.message || "Internal server error!"});
-  }
-  next();
-});
+app.use(globalErrorHandler);
 
 module.exports = app;
