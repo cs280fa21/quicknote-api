@@ -53,7 +53,7 @@ describe(`Test ${endpoint} endpoints`, () => {
 
     beforeAll(async () => {
       samples[0] = await notes.create({
-        title: faker.lorem.sentence(),
+        title: "known title for search query!",
         text: faker.lorem.paragraph(),
         author: clients[0]._id,
       });
@@ -101,9 +101,21 @@ describe(`Test ${endpoint} endpoints`, () => {
       expect(response.body.data.length).toBe(expected);
     });
 
+    describe(`Test GET ${endpoint} with query parameter`, () => {
+      test("Return 200 and list of notes for successful request", async () => {
+        const query = samples[0].title;
+        const response = await request
+          .get(`${endpoint}?query=${query}`)
+          .set("Authorization", `Bearer ${tokens.client}`);
+        expect(response.status).toBe(200);
+        const expected = samples.filter((s) => s.title.includes(query)).length;
+        expect(response.body.data.length).toBe(expected);
+      });
+    });
+
     afterAll(async () => {
       for (const sample of samples) {
-        await notes.delete(sample._id);
+        await notes.delete(sample.author, sample._id);
       }
     });
   });
@@ -167,7 +179,7 @@ describe(`Test ${endpoint} endpoints`, () => {
     });
 
     afterAll(async () => {
-      await notes.delete(sample._id);
+      await notes.delete(sample.author, sample._id);
     });
   });
 
@@ -219,6 +231,16 @@ describe(`Test ${endpoint} endpoints`, () => {
       expect(response.status).toBe(400);
     });
 
+    test("Return 400 for missing text", async () => {
+      const response = await request
+        .post(endpoint)
+        .send({
+          title: faker.lorem.paragraph(),
+        })
+        .set("Authorization", `Bearer ${tokens.client}`);
+      expect(response.status).toBe(400);
+    });
+
     test("Return 201 and the user for successful request", async () => {
       const response = await request
         .post(endpoint)
@@ -228,10 +250,11 @@ describe(`Test ${endpoint} endpoints`, () => {
       expect(response.body.data.title).toBe(sample.title);
       expect(response.body.data.text).toBe(sample.text);
       sample._id = response.body.data._id;
+      sample.author = response.body.data.author;
     });
 
     afterAll(async () => {
-      await notes.delete(sample._id);
+      await notes.delete(sample.author, sample._id);
     });
   });
 
@@ -312,7 +335,7 @@ describe(`Test ${endpoint} endpoints`, () => {
     });
 
     afterAll(async () => {
-      await notes.delete(sample._id);
+      await notes.delete(sample.author, sample._id);
     });
   });
 
