@@ -6,7 +6,7 @@
   "scripts": {
     "dev": "nodemon .",
     "start": "node .",
-    "test": "jest"
+    "test": "jest --runInBand"
   },
   "keywords": [],
   "author": "",
